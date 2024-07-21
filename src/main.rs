@@ -18,8 +18,30 @@ fn main() {
     println!("You have {} turns to guess the code. Good luck!", limit);
 
     match get_input("Guess: ") {
-        Ok(guess) => println!("You guessed {}", guess),
+        Ok(input) => {
+            let code = code::from_string(input);
+            match code {
+                Some(guess) => println!("You guessed {}", guess),
+                None => println!(
+                    "Please enter 4 digits, \
+                    where each digit is between 1 and 6, e.g. 1234"
+                ),
+            }
+        }
         Err(error) => error!("Input error: {}", error),
+    }
+}
+
+mod code {
+    pub fn from_string(guess: String) -> Option<String> {
+        if guess.len() == 4 && guess.chars().all(is_valid_digit) {
+            Some(guess)
+        } else {
+            None
+        }
+    }
+    fn is_valid_digit(c: char) -> bool {
+        "123456".find(c).is_some()
     }
 }
 
