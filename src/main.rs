@@ -1,6 +1,7 @@
 use clap::Parser;
 use log::error;
-use user_input::get_input;
+use mastermind_cli::code;
+use mastermind_cli::user_input::get_input;
 
 #[derive(Parser, Debug)]
 #[command(version, about, long_about = None)]
@@ -29,52 +30,5 @@ fn main() {
             }
         }
         Err(error) => error!("Input error: {}", error),
-    }
-}
-
-mod code {
-    pub fn from_string(guess: String) -> Option<String> {
-        if guess.len() == 4 && guess.chars().all(is_valid_digit) {
-            Some(guess)
-        } else {
-            None
-        }
-    }
-    fn is_valid_digit(c: char) -> bool {
-        "123456".find(c).is_some()
-    }
-}
-
-mod user_input {
-    use std::io::stdin;
-    use std::io::Write;
-    pub fn get_input(prompt: &str) -> Result<String, std::io::Error> {
-        print!("{}", prompt);
-        std::io::stdout().flush().unwrap();
-        let mut input = String::new();
-        match stdin().read_line(&mut input) {
-            Err(e) => Err(e),
-            Ok(_) => Ok(input.trim().to_string()),
-        }
-    }
-}
-
-#[cfg(test)]
-mod tests {
-    use super::*;
-
-    #[test]
-    fn code_from_correct_string() {
-        assert!(code::from_string("1234".to_string()).is_some());
-        assert!(code::from_string("6543".to_string()).is_some());
-    }
-
-    #[test]
-    fn code_from_incorrect_string() {
-        assert!(code::from_string("123".to_string()).is_none());
-        assert!(code::from_string("12345".to_string()).is_none());
-        assert!(code::from_string("1237".to_string()).is_none());
-        assert!(code::from_string("123x".to_string()).is_none());
-        assert!(code::from_string("0123".to_string()).is_none());
     }
 }
