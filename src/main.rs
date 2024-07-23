@@ -1,8 +1,5 @@
 use clap::Parser;
-use log::error;
-use mastermind_cli::code;
-use mastermind_cli::user_input::get_input;
-use rand::distributions::{Distribution, Uniform};
+use mastermind_cli::{feedback, is_valid, make_secret, show, user_input::read_line};
 
 #[derive(Parser, Debug)]
 #[command(version, about, long_about = None)]
@@ -20,30 +17,33 @@ fn main() {
     println!("+------------------------------------+");
     println!("You have {} turns to guess the code. Good luck!", limit);
 
-    match get_input("Guess: ") {
-        Ok(input) => {
-            let code = code::from_string(input);
-            match code {
-                Some(guess) => println!("You guessed {}", guess),
-                None => println!(
-                    "Please enter 4 digits, \
-                    where each digit is between 1 and 6, e.g. 1234"
-                ),
-            }
+    for k in (1..=limit).rev() {
+        println!(
+            "\nYou have {: >2} turn{} left.",
+            k,
+            if k > 1 { "s" } else { "" }
+        );
+
+        let input: String = read_line("Guess: ").unwrap();
+        let guess: String = input.clone();
+
+        let game_over = k == 1;
+
+        if !is_valid(input) {
+            println!(
+                "Please enter 4 digits, \
+                where each digit is between 1 and 6, e.g. 1234"
+            );
+            continue;
         }
-        Err(error) => error!("Input error: {}", error),
+
+        if guess == secret {
+            println!("You won!");
+            break;
+        } else if game_over {
+            println!("No such luck. The secret was {}", secret);
+        } else {
+            println!("Hint: {}", show(feedback(guess, secret.clone())));
+        }
     }
 }
-
-fn make_secret() -> String {
-    const DIGITS: &[u8] = b"123456";
-    const LENGTH: usize = 4;
-    let mut rng = rand::thread_rng();
-    let dist = Uniform::from(0..6);
-    let rand = |_| {
-        let idx = dist.sample(&mut rng);
-        DIGITS[idx] as char
-    };
-    (0..LENGTH).map(rand).collect()
-}
-
