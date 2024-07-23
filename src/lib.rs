@@ -50,7 +50,6 @@ pub fn show(hint: (usize, usize)) -> String {
 type Digit = char;
 type Code = Vec<Digit>;
 type Pair = (Digit, Digit);
-type Pairs = Vec<Pair>;
 
 fn make_code(s: &str) -> Code {
     s.chars().collect()
@@ -60,23 +59,23 @@ fn first(acc: (usize, Code)) -> usize {
     acc.0
 }
 
-fn zip(a: Code, b: Code) -> Pairs {
+fn zip(a: Code, b: Code) -> Vec<Pair> {
     a.into_iter().zip(b).collect()
 }
 
-fn unzip(pairs: Pairs) -> (Code, Code) {
+fn unzip(pairs: Vec<Pair>) -> (Code, Code) {
     pairs.into_iter().unzip()
 }
 
-fn unequal(pairs: Pairs) -> Pairs {
+fn unequal(pairs: Vec<Pair>) -> Vec<Pair> {
     pairs.into_iter().filter(|p| p.0 != p.1).collect()
 }
 
-fn num_correct(pairs: Pairs) -> usize {
+fn num_correct(pairs: Vec<Pair>) -> usize {
     pairs.len() - unequal(pairs).len()
 }
 
-fn num_present(pairs: Pairs) -> usize {
+fn num_present(pairs: Vec<Pair>) -> usize {
     let (guess, secret) = unzip(pairs);
     let tuple = guess.into_iter().fold((0, secret), count);
     first(tuple)
@@ -103,13 +102,13 @@ fn delete(x: Digit, xs: Code) -> Code {
 fn zip_two_codes() {
     let a: Code = make_code("123");
     let b: Code = make_code("134");
-    let expect: Pairs = vec![('1','1'),('2','3'),('3','4')];
+    let expect: Vec<Pair> = vec![('1','1'),('2','3'),('3','4')];
     assert_eq!(expect, zip(a, b));
 }
 
 #[test]
 fn unzip_two_codes() {
-    let pairs: Pairs = vec![('1','1'),('2','3'),('3','4')];
+    let pairs: Vec<Pair> = vec![('1','1'),('2','3'),('3','4')];
     let expect: (Code, Code) = (
         make_code("123"), make_code("134")
     );
@@ -118,20 +117,20 @@ fn unzip_two_codes() {
 
 #[test]
 fn filter_unequal_pairs() {
-    let pairs: Pairs = vec![('1','1'),('2','3'),('3','4')];
-    let expect: Pairs = vec![('2','3'),('3','4')];
+    let pairs: Vec<Pair> = vec![('1','1'),('2','3'),('3','4')];
+    let expect: Vec<Pair> = vec![('2','3'),('3','4')];
     assert_eq!(expect, unequal(pairs));
 }
 
 #[test]
 fn number_of_correct_digits() {
-    let pairs: Pairs = vec![('1','1'),('2','3'),('3','4')];
+    let pairs: Vec<Pair> = vec![('1','1'),('2','3'),('3','4')];
     assert_eq!(1, num_correct(pairs));
 }
 
 #[test]
 fn number_of_present_digits() {
-    let pairs: Pairs = vec![('2','3'),('3','4')];
+    let pairs: Vec<Pair> = vec![('2','3'),('3','4')];
     assert_eq!(1, num_present(pairs));
 }
 
