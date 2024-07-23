@@ -163,11 +163,11 @@ fn check_user_guess() {
     assert!(is_valid("0123".to_string()) == false);
 }
 
-type TestCase<'a> = Vec<(&'a str, &'a str, (usize, usize))>;
+type TestCase<'a> = (&'a str, &'a str, (usize, usize));
 
 #[test]
 fn check_user_feedback() {
-    let test_cases: TestCase = vec![
+    let test_cases: Vec<TestCase> = vec![
         ("1234", "1234", (4,0)),
         ("6243", "6225", (2,0)),
         ("5256", "2244", (1,0)),
