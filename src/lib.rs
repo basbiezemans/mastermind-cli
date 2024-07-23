@@ -39,8 +39,7 @@ pub fn feedback(guess: String, secret: String) -> (usize, usize) {
     let guess_code = make_code(guess.as_str());
     let secret_code = make_code(secret.as_str());
     let pairs = zip(guess_code, secret_code);
-    let clone = pairs.clone();
-    (num_correct(pairs), num_present(unequal(clone)))
+    (num_correct(pairs.clone()), num_present(unequal(pairs)))
 }
 
 pub fn show(hint: (usize, usize)) -> String {
