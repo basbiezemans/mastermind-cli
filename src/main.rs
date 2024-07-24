@@ -12,6 +12,7 @@ fn main() {
     let args = Args::parse();
     let limit: u8 = args.turns;
     let secret: String = make_secret();
+
     println!("+------------------------------------+");
     println!("| Mastermind, the code-breaking game |");
     println!("+------------------------------------+");
