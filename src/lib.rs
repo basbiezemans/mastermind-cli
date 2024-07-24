@@ -29,9 +29,7 @@ pub fn make_secret() -> String {
 }
 
 pub fn is_valid(guess: String) -> bool {
-    let is_valid_digit = |c| {
-        "123456".find(c).is_some()
-    };
+    let is_valid_digit = |c| "123456".find(c).is_some();
     guess.len() == 4 && guess.chars().all(is_valid_digit)
 }
 
@@ -102,35 +100,33 @@ fn delete(x: Digit, xs: Code) -> Code {
 fn zip_two_codes() {
     let a: Code = make_code("123");
     let b: Code = make_code("134");
-    let expect: Vec<Pair> = vec![('1','1'),('2','3'),('3','4')];
+    let expect: Vec<Pair> = vec![('1', '1'), ('2', '3'), ('3', '4')];
     assert_eq!(expect, zip(a, b));
 }
 
 #[test]
 fn unzip_two_codes() {
-    let pairs: Vec<Pair> = vec![('1','1'),('2','3'),('3','4')];
-    let expect: (Code, Code) = (
-        make_code("123"), make_code("134")
-    );
+    let pairs: Vec<Pair> = vec![('1', '1'), ('2', '3'), ('3', '4')];
+    let expect: (Code, Code) = (make_code("123"), make_code("134"));
     assert_eq!(expect, unzip(pairs));
 }
 
 #[test]
 fn filter_unequal_pairs() {
-    let pairs: Vec<Pair> = vec![('1','1'),('2','3'),('3','4')];
-    let expect: Vec<Pair> = vec![('2','3'),('3','4')];
+    let pairs: Vec<Pair> = vec![('1', '1'), ('2', '3'), ('3', '4')];
+    let expect: Vec<Pair> = vec![('2', '3'), ('3', '4')];
     assert_eq!(expect, unequal(pairs));
 }
 
 #[test]
 fn number_of_correct_digits() {
-    let pairs: Vec<Pair> = vec![('1','1'),('2','3'),('3','4')];
+    let pairs: Vec<Pair> = vec![('1', '1'), ('2', '3'), ('3', '4')];
     assert_eq!(1, num_correct(pairs));
 }
 
 #[test]
 fn number_of_present_digits() {
-    let pairs: Vec<Pair> = vec![('2','3'),('3','4')];
+    let pairs: Vec<Pair> = vec![('2', '3'), ('3', '4')];
     assert_eq!(1, num_present(pairs));
 }
 
@@ -152,7 +148,7 @@ fn count_how_many_times_digit_occurs_in_code() {
 
 #[test]
 fn show_user_hint() {
-    assert_eq!("●○", show((1,1)));
+    assert_eq!("●○", show((1, 1)));
 }
 
 #[test]
@@ -166,14 +162,14 @@ type TestCase<'a> = (&'a str, &'a str, (usize, usize));
 #[test]
 fn verify_user_feedback() {
     let test_cases: Vec<TestCase> = vec![
-        ("1234", "1234", (4,0)),
-        ("6243", "6225", (2,0)),
-        ("5256", "2244", (1,0)),
-        ("1111", "2222", (0,0)),
-        ("6423", "2252", (0,1)),
-        ("6443", "4124", (0,2)),
-        ("6163", "1136", (1,2)),
-        ("1234", "2134", (2,2)),
+        ("1234", "1234", (4, 0)),
+        ("6243", "6225", (2, 0)),
+        ("5256", "2244", (1, 0)),
+        ("1111", "2222", (0, 0)),
+        ("6423", "2252", (0, 1)),
+        ("6443", "4124", (0, 2)),
+        ("6163", "1136", (1, 2)),
+        ("1234", "2134", (2, 2)),
     ];
     for test in test_cases {
         let (guess, secret, hint) = test;
