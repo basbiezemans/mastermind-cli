@@ -4,10 +4,10 @@ use rand::distributions::{Distribution, Uniform};
 
 pub mod user_input {
     use std::io::stdin;
-    use std::io::Write;
+    use std::io::{stdout, Write};
     pub fn read_line(prompt: &str) -> Result<String, std::io::Error> {
         print!("{}", prompt);
-        std::io::stdout().flush().unwrap();
+        stdout().flush().unwrap();
         let mut input = String::new();
         match stdin().read_line(&mut input) {
             Err(e) => Err(e),
