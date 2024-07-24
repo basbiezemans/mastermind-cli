@@ -156,7 +156,7 @@ fn show_user_hint() {
 }
 
 #[test]
-fn check_user_guess() {
+fn validate_user_guess() {
     assert!(is_valid(make_secret()));
     assert!(is_valid("0123".to_string()) == false);
 }
@@ -164,7 +164,7 @@ fn check_user_guess() {
 type TestCase<'a> = (&'a str, &'a str, (usize, usize));
 
 #[test]
-fn check_user_feedback() {
+fn verify_user_feedback() {
     let test_cases: Vec<TestCase> = vec![
         ("1234", "1234", (4,0)),
         ("6243", "6225", (2,0)),
