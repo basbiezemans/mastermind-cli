@@ -1,3 +1,8 @@
+[![Build binary release](https://github.com/basbiezemans/mastermind-cli/actions/workflows/release.yml/badge.svg)](https://github.com/basbiezemans/mastermind-cli/actions/workflows/release.yml)
+[![Clippy](https://github.com/basbiezemans/mastermind-cli/actions/workflows/lint.yml/badge.svg)](https://github.com/basbiezemans/mastermind-cli/actions/workflows/lint.yml)
+[![Tests](https://github.com/basbiezemans/mastermind-cli/actions/workflows/tests.yml/badge.svg)](https://github.com/basbiezemans/mastermind-cli/actions/workflows/tests.yml)
+[![Rustfmt](https://github.com/basbiezemans/mastermind-cli/actions/workflows/rustfmt.yml/badge.svg)](https://github.com/basbiezemans/mastermind-cli/actions/workflows/rustfmt.yml)
+
 # Mastermind Game
 Mastermind code-breaking game as a CLI application
 
