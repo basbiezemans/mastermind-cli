@@ -25,7 +25,7 @@ fn main() {
             if k > 1 { "s" } else { "" }
         );
 
-        let input: String = read_line("Guess: ").unwrap();
+        let input: String = read_line("Guess: ").unwrap_or_default();
         let guess: String = input.clone();
 
         let game_over = k == 1;
