@@ -2,11 +2,15 @@
 
 use rand::distributions::{Distribution, Uniform};
 
+/// Prompt the user and read from standard input.
 pub mod user_input {
     use std::io::{stdin, stdout, Write};
+    /// Read bytes from the underlying stream until the newline delimiter
+    /// is found. Once found, all bytes, including the delimiter, will be
+    /// appended to a buffer, trimmed, and returned as a string.
     pub fn read_line(prompt: &str) -> Result<String, std::io::Error> {
         print!("{}", prompt);
-        stdout().flush().unwrap();
+        stdout().flush().unwrap(); // write prompt to standard output
         let mut input = String::new();
         match stdin().read_line(&mut input) {
             Err(e) => Err(e),
@@ -15,6 +19,9 @@ pub mod user_input {
     }
 }
 
+/// Generate a secret code from a uniform distribution.
+/// The generated code is a 4 digit number, and each digit is an element
+/// of the set { 1, 2, 3, 4, 5, 6 }.
 pub fn make_secret() -> String {
     const DIGITS: &[u8] = b"123456";
     const LENGTH: usize = 4;
@@ -27,14 +34,18 @@ pub fn make_secret() -> String {
     (0..LENGTH).map(rand).collect()
 }
 
-// Take a secret code and a guess, and return a hint with the number
-// of correctly guessed digits and the number of digits that are not
-// correct but do occur in the secret. This function is symmetric.
+/// Take a secret code and a guess, and return a hint with the number
+/// of correctly guessed digits and the number of digits that are not
+/// correct but do occur in the secret.
+/// This function is symmetric, i.e. f(a, b) = f(b, a).
 pub fn feedback(s1: String, s2: String) -> Option<(usize, usize)> {
     let pairs = zip(make_code(&s1)?, make_code(&s2)?);
     Some((num_correct(pairs.clone()), num_present(unequal(pairs))))
 }
 
+/// Format a hint as a sequence of solid ● and empty ○ dots. A ● for each
+/// correct digit, and a ○ for each digit that occurs in the secret code
+/// but in the wrong position.
 pub fn show(hint: Option<(usize, usize)>) -> String {
     match hint {
         Some(inner) => {
