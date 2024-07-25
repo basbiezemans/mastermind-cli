@@ -1,5 +1,5 @@
 use clap::Parser;
-use mastermind_cli::{feedback, is_valid, make_secret, show, user_input::read_line};
+use mastermind_cli::{feedback, make_secret, show, user_input::read_line};
 
 #[derive(Parser, Debug)]
 #[clap(
@@ -29,18 +29,9 @@ fn main() {
             if k > 1 { "s" } else { "" }
         );
 
-        let input: String = read_line("Guess: ").unwrap_or_default();
-        let guess: String = input.clone();
+        let guess: String = read_line("Guess: ").unwrap_or_default();
 
         let game_over = k == 1;
-
-        if !is_valid(input) {
-            println!(
-                "Please enter 4 digits, \
-                where each digit is between 1 and 6, e.g. 1234"
-            );
-            continue;
-        }
 
         if guess == secret {
             println!("You won!");

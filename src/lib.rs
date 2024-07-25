@@ -28,29 +28,36 @@ pub fn make_secret() -> String {
     (0..LENGTH).map(rand).collect()
 }
 
-pub fn is_valid(guess: String) -> bool {
-    let is_valid_digit = |c| "123456".find(c).is_some();
-    guess.len() == 4 && guess.chars().all(is_valid_digit)
+// Take a secret code and a guess, and return a hint with the number
+// of correctly guessed digits and the number of digits that are not
+// correct but do occur in the secret. This function is symmetric.
+pub fn feedback(s1: String, s2: String) -> Option<(usize, usize)> {
+    let pairs = zip(make_code(&s1)?, make_code(&s2)?);
+    Some((num_correct(pairs.clone()), num_present(unequal(pairs))))
 }
 
-pub fn feedback(guess: String, secret: String) -> (usize, usize) {
-    let guess_code = make_code(guess.as_str());
-    let secret_code = make_code(secret.as_str());
-    let pairs = zip(guess_code, secret_code);
-    (num_correct(pairs.clone()), num_present(unequal(pairs)))
-}
-
-pub fn show(hint: (usize, usize)) -> String {
-    let (correct, present) = hint;
-    "●".repeat(correct) + "○".repeat(present).as_str()
+pub fn show(hint: Option<(usize, usize)>) -> String {
+    match hint {
+        Some(inner) => {
+            let (correct, present) = inner;
+            "●".repeat(correct) + "○".repeat(present).as_str()
+        }
+        None => String::from(
+            "please enter 4 digits, \
+                where each digit is between 1 and 6, e.g. 1234",
+        ),
+    }
 }
 
 type Digit = char;
 type Code = Vec<Digit>;
 type Pair = (Digit, Digit);
 
-fn make_code(s: &str) -> Code {
-    s.chars().collect()
+fn make_code(s: &str) -> Option<Code> {
+    if !is_valid(s) {
+        return None;
+    }
+    Some(s.chars().collect())
 }
 
 fn first(acc: (usize, Code)) -> usize {
@@ -79,7 +86,10 @@ fn num_present(pairs: Vec<Pair>) -> usize {
     first(tuple)
 }
 
-// Count how many times a digit occurs in a code
+// Take an accumulator, containing a tally and secret code, and a
+// digit. Increment the tally if the digit occurs in the code.
+// Return a new accumulator, if applicable with updated tally and
+// code.
 fn count(acc: (usize, Code), digit: Digit) -> (usize, Code) {
     let (tally, secret) = acc;
     if secret.contains(&digit) {
@@ -89,72 +99,78 @@ fn count(acc: (usize, Code), digit: Digit) -> (usize, Code) {
     }
 }
 
-// Remove the first occurrence of agiven digit from a code
+// Remove the first occurrence of a given digit from a code
 fn delete(x: Digit, xs: Code) -> Code {
     xs.splitn(2, |y| *y == x).collect::<Vec<_>>().concat()
+}
+
+fn is_valid(guess: &str) -> bool {
+    let is_valid_digit = |c| "123456".find(c).is_some();
+    guess.len() == 4 && guess.chars().all(is_valid_digit)
 }
 
 /**** TESTS *****************************************************/
 
 #[test]
-fn zip_two_codes() {
-    let a: Code = make_code("123");
-    let b: Code = make_code("134");
-    let expect: Vec<Pair> = vec![('1', '1'), ('2', '3'), ('3', '4')];
+fn zip_two_char_vectors() {
+    let a = char_vec("123");
+    let b = char_vec("134");
+    let expect = vec![('1', '1'), ('2', '3'), ('3', '4')];
     assert_eq!(expect, zip(a, b));
 }
 
 #[test]
-fn unzip_two_codes() {
-    let pairs: Vec<Pair> = vec![('1', '1'), ('2', '3'), ('3', '4')];
-    let expect: (Code, Code) = (make_code("123"), make_code("134"));
+fn unzip_two_char_vectors() {
+    let pairs = vec![('1', '1'), ('2', '3'), ('3', '4')];
+    let expect = (char_vec("123"), char_vec("134"));
     assert_eq!(expect, unzip(pairs));
 }
 
 #[test]
 fn filter_unequal_pairs() {
-    let pairs: Vec<Pair> = vec![('1', '1'), ('2', '3'), ('3', '4')];
-    let expect: Vec<Pair> = vec![('2', '3'), ('3', '4')];
+    let pairs = vec![('1', '1'), ('2', '3'), ('3', '4')];
+    let expect = vec![('2', '3'), ('3', '4')];
     assert_eq!(expect, unequal(pairs));
 }
 
 #[test]
 fn number_of_correct_digits() {
-    let pairs: Vec<Pair> = vec![('1', '1'), ('2', '3'), ('3', '4')];
+    let pairs = vec![('1', '1'), ('2', '3'), ('3', '4')];
     assert_eq!(1, num_correct(pairs));
 }
 
 #[test]
 fn number_of_present_digits() {
-    let pairs: Vec<Pair> = vec![('2', '3'), ('3', '4')];
+    let pairs = vec![('2', '3'), ('3', '4')];
     assert_eq!(1, num_present(pairs));
 }
 
 #[test]
-fn delete_digit_from_code() {
-    let c1: Code = make_code("1234");
-    let c2: Code = make_code("1334");
-    assert_eq!(make_code("124"), delete('3', c1));
-    assert_eq!(make_code("134"), delete('3', c2));
+fn delete_char_from_vector() {
+    let v1 = char_vec("1234");
+    let v2 = char_vec("1334");
+    assert_eq!(char_vec("124"), delete('3', v1));
+    assert_eq!(char_vec("134"), delete('3', v2));
 }
 
 #[test]
-fn count_how_many_times_digit_occurs_in_code() {
-    let c1: (usize, Code) = (0, make_code("34"));
-    let c2: (usize, Code) = (0, make_code("324"));
-    assert_eq!(0, first(count(c1.clone(), '5')));
-    assert_eq!(1, first(count(c2.clone(), '2')));
+fn does_char_occur_in_vector() {
+    let t1 = (0, char_vec("34"));
+    let t2 = (0, char_vec("324"));
+    assert_eq!(0, first(count(t1, '5')));
+    assert_eq!(1, first(count(t2, '2')));
 }
 
 #[test]
 fn show_user_hint() {
-    assert_eq!("●○", show((1, 1)));
+    assert_eq!("●○", show(Some((1, 1))));
+    assert_eq!("please", &show(None)[..6]);
 }
 
 #[test]
 fn validate_user_guess() {
-    assert!(is_valid(make_secret()));
-    assert!(is_valid("0123".to_string()) == false);
+    assert!(is_valid(&make_secret()));
+    assert!(is_valid("0123") == false);
 }
 
 type TestCase<'a> = (&'a str, &'a str, (usize, usize));
@@ -172,7 +188,12 @@ fn verify_user_feedback() {
         ("1234", "2134", (2, 2)),
     ];
     for test in test_cases {
-        let (guess, secret, hint) = test;
-        assert_eq!(hint, feedback(guess.to_string(), secret.to_string()));
+        let (a, b, hint) = test;
+        assert_eq!(Some(hint), feedback(a.to_string(), b.to_string()));
     }
+}
+
+// Helper function for testing
+fn char_vec(s: &str) -> Vec<char> {
+    s.chars().collect()
 }
