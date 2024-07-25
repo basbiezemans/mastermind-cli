@@ -124,6 +124,14 @@ fn is_valid(guess: &str) -> bool {
 /**** TESTS *****************************************************/
 
 #[test]
+fn create_code_from_string() {
+    assert!(make_code("1234").is_some());
+    assert!(make_code("02e7").is_none());
+    let expect = char_vec("1234");
+    assert_eq!(Some(expect), make_code("1234"));
+}
+
+#[test]
 fn zip_two_char_vectors() {
     let a = char_vec("123");
     let b = char_vec("134");
@@ -203,6 +211,8 @@ fn verify_user_feedback() {
         let (a, b, hint) = test;
         assert_eq!(Some(hint), feedback(a.to_string(), b.to_string()));
     }
+    assert!(feedback("".to_string(), "1234".to_string()).is_none());
+    assert!(feedback("qwerty".to_string(), "1234".to_string()).is_none());
 }
 
 // Helper function for testing
