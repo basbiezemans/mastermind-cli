@@ -2,6 +2,10 @@ use clap::Parser;
 use mastermind_cli::{feedback, is_valid, make_secret, show, user_input::read_line};
 
 #[derive(Parser, Debug)]
+#[clap(
+    about = "Mastermind, the code-breaking game",
+    after_help = "Example: mastermind-cli --turns 12"
+)]
 #[command(version, about, long_about = None)]
 struct Args {
     #[arg(short, long, default_value_t = 10)]
