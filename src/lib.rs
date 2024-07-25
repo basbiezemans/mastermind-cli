@@ -3,8 +3,7 @@
 use rand::distributions::{Distribution, Uniform};
 
 pub mod user_input {
-    use std::io::stdin;
-    use std::io::{stdout, Write};
+    use std::io::{stdin, stdout, Write};
     pub fn read_line(prompt: &str) -> Result<String, std::io::Error> {
         print!("{}", prompt);
         stdout().flush().unwrap();
