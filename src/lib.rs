@@ -39,7 +39,9 @@ pub fn make_secret() -> String {
 /// correct but do occur in the secret.
 /// This function is symmetric, i.e. f(a, b) = f(b, a).
 pub fn feedback(s1: String, s2: String) -> Option<(usize, usize)> {
-    let pairs = zip(make_code(&s1)?, make_code(&s2)?);
+    let code1 = make_code(&s1)?;
+    let code2 = make_code(&s2)?;
+    let pairs = zip(code1, code2);
     Some((num_correct(pairs.clone()), num_present(unequal(pairs))))
 }
 
