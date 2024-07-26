@@ -214,9 +214,10 @@ mod tests {
         for test in test_cases {
             let (a, b, hint) = test;
             assert_eq!(Some(hint), feedback(a.to_string(), b.to_string()));
+            assert_eq!(Some(hint), feedback(b.to_string(), a.to_string()));
         }
         assert!(feedback("".to_string(), "1234".to_string()).is_none());
-        assert!(feedback("qwerty".to_string(), "1234".to_string()).is_none());
+        assert!(feedback("1234".to_string(), "qwerty".to_string()).is_none());
     }
 
     // Helper function for testing
