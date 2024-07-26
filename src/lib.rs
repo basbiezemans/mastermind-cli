@@ -39,8 +39,8 @@ pub fn make_secret() -> String {
 /// correct but do occur in the secret.
 /// This function is symmetric, i.e. f(a, b) = f(b, a).
 pub fn feedback(s1: String, s2: String) -> Option<(usize, usize)> {
-    let code1 = parse_code(&s1)?;
-    let code2 = parse_code(&s2)?;
+    let code1 = parse::code(&s1)?;
+    let code2 = parse::code(&s2)?;
     let pairs = zip(code1, code2);
     Some((num_correct(pairs.clone()), num_present(unequal(pairs))))
 }
@@ -65,11 +65,20 @@ type Digit = char;
 type Code = Vec<Digit>;
 type Pair = (Digit, Digit);
 
-fn parse_code(s: &str) -> Option<Code> {
-    if !is_valid(s) {
-        return None;
+mod parse {
+    use super::Code;
+
+    pub fn code(string: &str) -> Option<Code> {
+        if !is_valid(string) {
+            return None;
+        }
+        Some(string.chars().collect())
     }
-    Some(s.chars().collect())
+
+    pub fn is_valid(string: &str) -> bool {
+        let is_valid_digit = |c| "123456".find(c).is_some();
+        string.len() == 4 && string.chars().all(is_valid_digit)
+    }
 }
 
 fn first(acc: (usize, Code)) -> usize {
@@ -116,11 +125,6 @@ fn delete(x: Digit, xs: Code) -> Code {
     xs.splitn(2, |y| *y == x).collect::<Vec<_>>().concat()
 }
 
-fn is_valid(guess: &str) -> bool {
-    let is_valid_digit = |c| "123456".find(c).is_some();
-    guess.len() == 4 && guess.chars().all(is_valid_digit)
-}
-
 /**** TESTS *****************************************************/
 
 #[cfg(test)]
@@ -129,10 +133,10 @@ mod tests {
 
     #[test]
     fn parse_code_from_string() {
-        assert!(parse_code("1234").is_some());
-        assert!(parse_code("02e7").is_none());
+        assert!(parse::code("1234").is_some());
+        assert!(parse::code("02e7").is_none());
         let expect = char_vec("1234");
-        assert_eq!(Some(expect), parse_code("1234"));
+        assert_eq!(Some(expect), parse::code("1234"));
     }
 
     #[test]
@@ -193,8 +197,8 @@ mod tests {
 
     #[test]
     fn validate_user_guess() {
-        assert!(is_valid(&make_secret()));
-        assert!(is_valid("0123") == false);
+        assert!(parse::is_valid(&make_secret()));
+        assert!(parse::is_valid("0123") == false);
     }
 
     type TestCase<'a> = (&'a str, &'a str, (usize, usize));
