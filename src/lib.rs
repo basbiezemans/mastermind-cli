@@ -49,8 +49,7 @@ pub fn feedback(s1: String, s2: String) -> Option<(usize, usize)> {
 /// but in the wrong position.
 pub fn show(hint: Option<(usize, usize)>) -> String {
     match hint {
-        Some(inner) => {
-            let (correct, present) = inner;
+        Some((correct, present)) => {
             "●".repeat(correct) + "○".repeat(present).as_str()
         }
         None => String::from(
