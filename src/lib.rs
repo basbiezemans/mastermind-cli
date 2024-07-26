@@ -123,99 +123,104 @@ fn is_valid(guess: &str) -> bool {
 
 /**** TESTS *****************************************************/
 
-#[test]
-fn create_code_from_string() {
-    assert!(make_code("1234").is_some());
-    assert!(make_code("02e7").is_none());
-    let expect = char_vec("1234");
-    assert_eq!(Some(expect), make_code("1234"));
-}
+#[cfg(test)]
+mod tests {
+    use super::*;
 
-#[test]
-fn zip_two_char_vectors() {
-    let a = char_vec("123");
-    let b = char_vec("134");
-    let expect = vec![('1', '1'), ('2', '3'), ('3', '4')];
-    assert_eq!(expect, zip(a, b));
-}
-
-#[test]
-fn unzip_two_char_vectors() {
-    let pairs = vec![('1', '1'), ('2', '3'), ('3', '4')];
-    let expect = (char_vec("123"), char_vec("134"));
-    assert_eq!(expect, unzip(pairs));
-}
-
-#[test]
-fn filter_unequal_pairs() {
-    let pairs = vec![('1', '1'), ('2', '3'), ('3', '4')];
-    let expect = vec![('2', '3'), ('3', '4')];
-    assert_eq!(expect, unequal(pairs));
-}
-
-#[test]
-fn number_of_correct_digits() {
-    let pairs = vec![('1', '1'), ('2', '3'), ('3', '4')];
-    assert_eq!(1, num_correct(pairs));
-}
-
-#[test]
-fn number_of_present_digits() {
-    let pairs = vec![('2', '3'), ('3', '4')];
-    assert_eq!(1, num_present(pairs));
-}
-
-#[test]
-fn delete_char_from_vector() {
-    let v1 = char_vec("1234");
-    let v2 = char_vec("1334");
-    assert_eq!(char_vec("124"), delete('3', v1));
-    assert_eq!(char_vec("134"), delete('3', v2));
-}
-
-#[test]
-fn does_char_occur_in_vector() {
-    let t1 = (0, char_vec("34"));
-    let t2 = (0, char_vec("324"));
-    assert_eq!(0, first(count(t1, '5')));
-    assert_eq!(1, first(count(t2, '2')));
-}
-
-#[test]
-fn show_user_hint() {
-    assert_eq!("●○", show(Some((1, 1))));
-    assert_eq!("please", &show(None)[..6]);
-}
-
-#[test]
-fn validate_user_guess() {
-    assert!(is_valid(&make_secret()));
-    assert!(is_valid("0123") == false);
-}
-
-type TestCase<'a> = (&'a str, &'a str, (usize, usize));
-
-#[test]
-fn verify_user_feedback() {
-    let test_cases: Vec<TestCase> = vec![
-        ("1234", "1234", (4, 0)),
-        ("6243", "6225", (2, 0)),
-        ("5256", "2244", (1, 0)),
-        ("1111", "2222", (0, 0)),
-        ("6423", "2252", (0, 1)),
-        ("6443", "4124", (0, 2)),
-        ("6163", "1136", (1, 2)),
-        ("1234", "2134", (2, 2)),
-    ];
-    for test in test_cases {
-        let (a, b, hint) = test;
-        assert_eq!(Some(hint), feedback(a.to_string(), b.to_string()));
+    #[test]
+    fn create_code_from_string() {
+        assert!(make_code("1234").is_some());
+        assert!(make_code("02e7").is_none());
+        let expect = char_vec("1234");
+        assert_eq!(Some(expect), make_code("1234"));
     }
-    assert!(feedback("".to_string(), "1234".to_string()).is_none());
-    assert!(feedback("qwerty".to_string(), "1234".to_string()).is_none());
-}
 
-// Helper function for testing
-fn char_vec(s: &str) -> Vec<char> {
-    s.chars().collect()
+    #[test]
+    fn zip_two_char_vectors() {
+        let a = char_vec("123");
+        let b = char_vec("134");
+        let expect = vec![('1', '1'), ('2', '3'), ('3', '4')];
+        assert_eq!(expect, zip(a, b));
+    }
+
+    #[test]
+    fn unzip_two_char_vectors() {
+        let pairs = vec![('1', '1'), ('2', '3'), ('3', '4')];
+        let expect = (char_vec("123"), char_vec("134"));
+        assert_eq!(expect, unzip(pairs));
+    }
+
+    #[test]
+    fn filter_unequal_pairs() {
+        let pairs = vec![('1', '1'), ('2', '3'), ('3', '4')];
+        let expect = vec![('2', '3'), ('3', '4')];
+        assert_eq!(expect, unequal(pairs));
+    }
+
+    #[test]
+    fn number_of_correct_digits() {
+        let pairs = vec![('1', '1'), ('2', '3'), ('3', '4')];
+        assert_eq!(1, num_correct(pairs));
+    }
+
+    #[test]
+    fn number_of_present_digits() {
+        let pairs = vec![('2', '3'), ('3', '4')];
+        assert_eq!(1, num_present(pairs));
+    }
+
+    #[test]
+    fn delete_char_from_vector() {
+        let v1 = char_vec("1234");
+        let v2 = char_vec("1334");
+        assert_eq!(char_vec("124"), delete('3', v1));
+        assert_eq!(char_vec("134"), delete('3', v2));
+    }
+
+    #[test]
+    fn does_char_occur_in_vector() {
+        let t1 = (0, char_vec("34"));
+        let t2 = (0, char_vec("324"));
+        assert_eq!(0, first(count(t1, '5')));
+        assert_eq!(1, first(count(t2, '2')));
+    }
+
+    #[test]
+    fn show_user_hint() {
+        assert_eq!("●○", show(Some((1, 1))));
+        assert_eq!("please", &show(None)[..6]);
+    }
+
+    #[test]
+    fn validate_user_guess() {
+        assert!(is_valid(&make_secret()));
+        assert!(is_valid("0123") == false);
+    }
+
+    type TestCase<'a> = (&'a str, &'a str, (usize, usize));
+
+    #[test]
+    fn verify_user_feedback() {
+        let test_cases: Vec<TestCase> = vec![
+            ("1234", "1234", (4, 0)),
+            ("6243", "6225", (2, 0)),
+            ("5256", "2244", (1, 0)),
+            ("1111", "2222", (0, 0)),
+            ("6423", "2252", (0, 1)),
+            ("6443", "4124", (0, 2)),
+            ("6163", "1136", (1, 2)),
+            ("1234", "2134", (2, 2)),
+        ];
+        for test in test_cases {
+            let (a, b, hint) = test;
+            assert_eq!(Some(hint), feedback(a.to_string(), b.to_string()));
+        }
+        assert!(feedback("".to_string(), "1234".to_string()).is_none());
+        assert!(feedback("qwerty".to_string(), "1234".to_string()).is_none());
+    }
+
+    // Helper function for testing
+    fn char_vec(s: &str) -> Vec<char> {
+        s.chars().collect()
+    }
 }
