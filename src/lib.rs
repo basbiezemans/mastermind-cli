@@ -39,8 +39,8 @@ pub fn make_secret() -> String {
 /// correct but do occur in the secret.
 /// This function is symmetric, i.e. f(a, b) = f(b, a).
 pub fn feedback(s1: String, s2: String) -> Option<(usize, usize)> {
-    let code1 = make_code(&s1)?;
-    let code2 = make_code(&s2)?;
+    let code1 = parse_code(&s1)?;
+    let code2 = parse_code(&s2)?;
     let pairs = zip(code1, code2);
     Some((num_correct(pairs.clone()), num_present(unequal(pairs))))
 }
@@ -65,7 +65,7 @@ type Digit = char;
 type Code = Vec<Digit>;
 type Pair = (Digit, Digit);
 
-fn make_code(s: &str) -> Option<Code> {
+fn parse_code(s: &str) -> Option<Code> {
     if !is_valid(s) {
         return None;
     }
@@ -128,11 +128,11 @@ mod tests {
     use super::*;
 
     #[test]
-    fn create_code_from_string() {
-        assert!(make_code("1234").is_some());
-        assert!(make_code("02e7").is_none());
+    fn parse_code_from_string() {
+        assert!(parse_code("1234").is_some());
+        assert!(parse_code("02e7").is_none());
         let expect = char_vec("1234");
-        assert_eq!(Some(expect), make_code("1234"));
+        assert_eq!(Some(expect), parse_code("1234"));
     }
 
     #[test]
