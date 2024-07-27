@@ -104,8 +104,7 @@ fn num_correct(pairs: Vec<Pair>) -> usize {
 
 fn num_present(pairs: Vec<Pair>) -> usize {
     let (guess, secret) = unzip(pairs);
-    let tuple = guess.into_iter().fold((0, secret), count);
-    first(tuple)
+    first(guess.into_iter().fold((0, secret), count))
 }
 
 // Take an accumulator, containing a tally and secret code, and a
