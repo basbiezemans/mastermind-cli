@@ -82,7 +82,7 @@ mod code {
     }
 }
 
-fn first(acc: (usize, Code)) -> usize {
+fn tally(acc: (usize, Code)) -> usize {
     acc.0
 }
 
@@ -104,7 +104,7 @@ fn num_correct(pairs: Vec<Pair>) -> usize {
 
 fn num_present(pairs: Vec<Pair>) -> usize {
     let (guess, secret) = unzip(pairs);
-    first(guess.into_iter().fold((0, secret), count))
+    tally(guess.into_iter().fold((0, secret), count))
 }
 
 // Take an accumulator, containing a tally and secret code, and a
@@ -185,8 +185,8 @@ mod tests {
     fn does_char_occur_in_vector() {
         let t1 = (0, char_vec("34"));
         let t2 = (0, char_vec("324"));
-        assert_eq!(0, first(count(t1, '5')));
-        assert_eq!(1, first(count(t2, '2')));
+        assert_eq!(0, tally(count(t1, '5')));
+        assert_eq!(1, tally(count(t2, '2')));
     }
 
     #[test]
