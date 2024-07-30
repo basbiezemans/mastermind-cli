@@ -25,7 +25,7 @@ pub mod user_input {
 pub fn make_secret() -> String {
     let bdigits = code::DIGITS.as_bytes();
     let mut rng = rand::thread_rng();
-    let dist = Uniform::from(0..6);
+    let dist = Uniform::from(0..code::DIGITS.len());
     let rand = |_| {
         let idx = dist.sample(&mut rng);
         bdigits[idx] as char
