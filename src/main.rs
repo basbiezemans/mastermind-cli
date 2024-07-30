@@ -1,5 +1,7 @@
 use clap::Parser;
-use mastermind_cli::{feedback, make_secret, show, user_input::read_line};
+use mastermind_cli::{
+    code::random as make_secret, feedback, show, user_input::read_line,
+};
 
 #[derive(Parser, Debug)]
 #[clap(

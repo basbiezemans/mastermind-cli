@@ -1,7 +1,5 @@
 #![allow(dead_code)]
 
-use rand::distributions::{Distribution, Uniform};
-
 /// Prompt the user and read from standard input.
 pub mod user_input {
     use std::io::{stdin, stdout, Write};
@@ -15,20 +13,6 @@ pub mod user_input {
         stdin().read_line(&mut input)?;
         Ok(input.trim_end().to_string())
     }
-}
-
-/// Generate a secret code from a uniform distribution.
-/// The generated code is a 4 digit number, and each digit is an element
-/// of the set { 1, 2, 3, 4, 5, 6 }.
-pub fn make_secret() -> String {
-    let bdigits = code::DIGITS.as_bytes();
-    let mut rng = rand::thread_rng();
-    let dist = Uniform::from(0..code::DIGITS.len());
-    let rand = |_| {
-        let idx = dist.sample(&mut rng);
-        bdigits[idx] as char
-    };
-    (0..code::LENGTH).map(rand).collect()
 }
 
 /// Take a secret code and a guess, and return a hint with the number
@@ -61,17 +45,32 @@ type Digit = char;
 type Code = Vec<Digit>;
 type Pair = (Digit, Digit);
 
-mod code {
+/// Parse or generate a 4-digit number.
+pub mod code {
     use super::Code;
+    use rand::distributions::{Distribution, Uniform};
 
-    pub const DIGITS: &str = "123456";
-    pub const LENGTH: usize = 4;
+    const DIGITS: &str = "123456";
+    const LENGTH: usize = 4;
 
     pub fn parse(string: &str) -> Option<Code> {
         if !is_valid(string) {
             return None;
         }
         Some(string.chars().collect())
+    }
+
+    /// Generate a random code from a uniform distribution. The generated
+    /// code is a 4 digit number, and each digit is an element of [1-6].
+    pub fn random() -> String {
+        let bdigits = DIGITS.as_bytes();
+        let mut rng = rand::thread_rng();
+        let dist = Uniform::from(0..DIGITS.len());
+        let rand = |_| {
+            let idx = dist.sample(&mut rng);
+            bdigits[idx] as char
+        };
+        (0..LENGTH).map(rand).collect()
     }
 
     pub fn is_valid(string: &str) -> bool {
@@ -195,7 +194,7 @@ mod tests {
 
     #[test]
     fn validate_user_guess() {
-        assert!(code::is_valid(&make_secret()));
+        assert!(code::is_valid(&code::random()));
         assert!(code::is_valid("0123") == false);
     }
 
