@@ -12,10 +12,8 @@ pub mod user_input {
         print!("{}", prompt);
         stdout().flush().unwrap(); // write prompt to standard output
         let mut input = String::new();
-        match stdin().read_line(&mut input) {
-            Err(e) => Err(e),
-            Ok(_) => Ok(input.trim_end().to_string()),
-        }
+        stdin().read_line(&mut input)?;
+        Ok(input.trim_end().to_string())
     }
 }
 
