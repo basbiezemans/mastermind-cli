@@ -72,6 +72,8 @@ pub mod code {
         }
     }
 
+    /// Parse a string to a code. The string has to be a 4 digit number,
+    /// and each digit an element of [1-6].
     pub fn parse(string: &str) -> Result<Code, ParseError> {
         if string.len() < LENGTH {
             return Err(ParseError::StringTooShort);
