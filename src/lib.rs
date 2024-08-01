@@ -1,5 +1,12 @@
 #![allow(dead_code)]
 
+use crate::code::ParseError;
+
+type Digit = char;
+type Code = Vec<Digit>;
+type Pair = (Digit, Digit);
+type Hint = (usize, usize);
+
 /// Prompt the user and read from standard input.
 pub mod user_input {
     use std::io::{stdin, stdout, Write};
@@ -19,45 +26,63 @@ pub mod user_input {
 /// of correctly guessed digits and the number of digits that are not
 /// correct but do occur in the secret.
 /// This function is symmetric, i.e. f(a, b) = f(b, a).
-pub fn feedback(s1: String, s2: String) -> Option<(usize, usize)> {
+pub fn feedback(s1: String, s2: String) -> Result<Hint, ParseError> {
     let code1 = code::parse(&s1)?;
     let code2 = code::parse(&s2)?;
     let pairs = zip(code1, code2);
-    Some((num_correct(pairs.clone()), num_present(unequal(pairs))))
+    Ok((num_correct(pairs.clone()), num_present(unequal(pairs))))
 }
 
 /// Format a hint as a sequence of solid ● and empty ○ dots. A ● for each
 /// correct digit, and a ○ for each digit that occurs in the secret code
 /// but in the wrong position.
-pub fn show(hint: Option<(usize, usize)>) -> String {
+pub fn show(hint: Result<Hint, ParseError>) -> String {
     match hint {
-        Some((correct, present)) => {
+        Ok((correct, present)) => {
             "●".repeat(correct) + "○".repeat(present).as_str()
         }
-        None => String::from(
-            "please enter 4 digits, \
-                where each digit is between 1 and 6, e.g. 1234",
-        ),
+        Err(ParseError::StringTooShort) | Err(ParseError::StringTooLong) => {
+            String::from("please enter 4 digits")
+        }
+        Err(ParseError::InvalidDigits) => {
+            String::from("each digit should be between 1 and 6, e.g. 1234")
+        }
     }
 }
-
-type Digit = char;
-type Code = Vec<Digit>;
-type Pair = (Digit, Digit);
 
 /// Parse or generate a 4-digit number.
 pub mod code {
     use super::Code;
     use rand::distributions::{Distribution, Uniform};
+    use std::fmt;
 
     const DIGITS: &str = "123456";
     const LENGTH: usize = 4;
 
-    pub fn parse(string: &str) -> Option<Code> {
-        if !is_valid(string) {
-            return None;
+    #[derive(PartialEq, Debug)]
+    pub enum ParseError {
+        StringTooShort,
+        StringTooLong,
+        InvalidDigits,
+    }
+
+    impl fmt::Display for ParseError {
+        fn fmt(&self, f: &mut fmt::Formatter) -> fmt::Result {
+            write!(f, "Parsing code error: invalid code")
         }
-        Some(string.chars().collect())
+    }
+
+    pub fn parse(string: &str) -> Result<Code, ParseError> {
+        if string.len() < LENGTH {
+            return Err(ParseError::StringTooShort);
+        }
+        if string.len() > LENGTH {
+            return Err(ParseError::StringTooLong);
+        }
+        if !string.chars().all(|c| DIGITS.find(c).is_some()) {
+            return Err(ParseError::InvalidDigits);
+        }
+        Ok(string.chars().collect())
     }
 
     /// Generate a random code from a uniform distribution. The generated
@@ -71,11 +96,6 @@ pub mod code {
             bdigits[idx] as char
         };
         (0..LENGTH).map(rand).collect()
-    }
-
-    pub fn is_valid(string: &str) -> bool {
-        let is_valid_digit = |c| DIGITS.find(c).is_some();
-        string.len() == LENGTH && string.chars().all(is_valid_digit)
     }
 }
 
@@ -130,10 +150,12 @@ mod tests {
 
     #[test]
     fn parse_code_from_string() {
-        assert!(code::parse("1234").is_some());
-        assert!(code::parse("02e7").is_none());
+        assert!(code::parse(&code::random()).is_ok());
+        assert!(code::parse("02e7").is_err());
+        assert!(code::parse("123").is_err());
+        assert!(code::parse("12345").is_err());
         let expect = char_vec("1234");
-        assert_eq!(Some(expect), code::parse("1234"));
+        assert_eq!(Ok(expect), code::parse("1234"));
     }
 
     #[test]
@@ -188,14 +210,7 @@ mod tests {
 
     #[test]
     fn show_user_hint() {
-        assert_eq!("●○", show(Some((1, 1))));
-        assert_eq!("please", &show(None)[..6]);
-    }
-
-    #[test]
-    fn validate_user_guess() {
-        assert!(code::is_valid(&code::random()));
-        assert!(code::is_valid("0123") == false);
+        assert_eq!("●○", show(Ok((1, 1))));
     }
 
     type TestCase<'a> = (&'a str, &'a str, (usize, usize));
@@ -214,11 +229,11 @@ mod tests {
         ];
         for test in test_cases {
             let (a, b, hint) = test;
-            assert_eq!(Some(hint), feedback(a.to_string(), b.to_string()));
-            assert_eq!(Some(hint), feedback(b.to_string(), a.to_string()));
+            assert_eq!(Ok(hint), feedback(a.to_string(), b.to_string()));
+            assert_eq!(Ok(hint), feedback(b.to_string(), a.to_string()));
         }
-        assert!(feedback("".to_string(), "1234".to_string()).is_none());
-        assert!(feedback("1234".to_string(), "qwerty".to_string()).is_none());
+        assert!(feedback("".to_string(), "1234".to_string()).is_err());
+        assert!(feedback("1234".to_string(), "qwerty".to_string()).is_err());
     }
 
     // Helper function for testing
