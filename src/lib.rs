@@ -130,8 +130,7 @@ fn num_present(pairs: Vec<Pair>) -> usize {
 // digit. Increment the tally if the digit occurs in the code.
 // Return a new accumulator, if applicable with updated tally and
 // code.
-fn count(acc: (usize, Code), digit: Digit) -> (usize, Code) {
-    let (tally, secret) = acc;
+fn count((tally, secret): (usize, Code), digit: Digit) -> (usize, Code) {
     if secret.contains(&digit) {
         (tally + 1, delete(digit, secret))
     } else {
