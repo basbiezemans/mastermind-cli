@@ -2,6 +2,7 @@ use clap::Parser;
 use mastermind_cli::{
     code::random as make_secret, feedback, show, user_input::read_line,
 };
+use pluralizer::pluralize;
 
 #[derive(Parser, Debug)]
 #[clap(
@@ -16,30 +17,32 @@ struct Args {
 
 fn main() {
     let args = Args::parse();
-    let limit: u8 = args.turns;
-    let secret: String = make_secret();
+    let limit = args.turns;
+    let secret = make_secret();
 
     println!("+------------------------------------+");
     println!("| Mastermind, the code-breaking game |");
     println!("+------------------------------------+");
-    println!("You have {} turns to guess the code. Good luck!", limit);
+    println!("You have {limit} turns to guess the code. Good luck!");
 
-    for k in (1..=limit).rev() {
+    for turns_left in (0..limit).rev() {
         println!(
-            "\nYou have {: >2} turn{} left.",
-            k,
-            if k > 1 { "s" } else { "" }
+            "\nYou have {: >2} {} left.",
+            (1 + turns_left),
+            pluralize("turn", (1 + turns_left).into(), false)
         );
 
-        let guess: String = read_line("Guess: ").unwrap_or_default();
-
-        let game_over = k == 1;
+        let guess = read_line("Guess: ").unwrap_or_default();
 
         if guess == secret {
-            println!("You won!");
+            let turns_taken = limit - turns_left;
+            println!(
+                "\nYou won in {}!\n",
+                pluralize("guess", turns_taken.into(), true)
+            );
             break;
-        } else if game_over {
-            println!("No such luck. The secret was {}", secret);
+        } else if turns_left == 0 {
+            println!("No such luck. The secret was {secret}\n");
         } else {
             println!("Hint: {}", show(feedback(guess, secret.clone())));
         }
