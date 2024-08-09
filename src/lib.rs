@@ -42,12 +42,14 @@ pub fn show(hint: Result<Hint, ParseError>) -> String {
         Ok((correct, present)) => {
             "●".repeat(correct) + "○".repeat(present).as_str()
         }
-        Err(ParseError::StringTooShort) | Err(ParseError::StringTooLong) => {
-            String::from("please enter 4 digits")
-        }
-        Err(ParseError::InvalidDigits) => {
-            String::from("each digit should be between 1 and 6, e.g. 1234")
-        }
+        Err(error) => match error {
+            ParseError::StringTooShort | ParseError::StringTooLong => {
+                String::from("please enter 4 digits")
+            }
+            ParseError::InvalidDigits => {
+                String::from("each digit should be between 1 and 6, e.g. 1234")
+            }
+        },
     }
 }
 
