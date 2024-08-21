@@ -16,9 +16,9 @@ cargo run --quiet
 
 The game has a minimal user interface.
 ```
-+------------------------------------+
-| Mastermind, the code-breaking game |
-+------------------------------------+
+┌────────────────────────────────────┐
+│ Mastermind, the code-breaking game │
+└────────────────────────────────────┘
 You have 10 turns to guess the code. Good luck!
 
 You have 10 turns left.

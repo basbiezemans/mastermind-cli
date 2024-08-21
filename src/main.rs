@@ -20,9 +20,9 @@ fn main() {
     let limit = args.turns;
     let secret = make_secret();
 
-    println!("+------------------------------------+");
-    println!("| Mastermind, the code-breaking game |");
-    println!("+------------------------------------+");
+    println!("┌────────────────────────────────────┐");
+    println!("│ Mastermind, the code-breaking game │");
+    println!("└────────────────────────────────────┘");
     println!("You have {limit} turns to guess the code. Good luck!");
 
     for turns_left in (0..limit).rev() {
