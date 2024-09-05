@@ -10,15 +10,15 @@ pub mod code;
 
 /// Prompt the user and read from standard input.
 pub mod user_input {
-    use std::io::{stdin, stdout, Write};
+    use std::io::{self, Write};
     /// Read bytes from the underlying stream until the newline delimiter
     /// is found. Once found, all bytes, including the delimiter, will be
     /// appended to a buffer, trimmed, and returned as a string.
-    pub fn read_line(prompt: &str) -> Result<String, std::io::Error> {
+    pub fn read_line(prompt: &str) -> io::Result<String> {
         print!("{}", prompt);
-        stdout().flush()?; // write prompt to standard output
+        io::stdout().flush()?; // write prompt to standard output
         let mut input = String::new();
-        stdin().read_line(&mut input)?;
+        io::stdin().read_line(&mut input)?;
         Ok(input.trim_end().to_string())
     }
 }
