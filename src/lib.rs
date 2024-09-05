@@ -17,9 +17,9 @@ pub mod user_input {
     pub fn read_line(prompt: &str) -> io::Result<String> {
         print!("{}", prompt);
         io::stdout().flush()?; // write prompt to standard output
-        let mut input = String::new();
-        io::stdin().read_line(&mut input)?;
-        Ok(input.trim_end().to_string())
+        let mut buffer = String::new();
+        io::stdin().read_line(&mut buffer)?;
+        Ok(buffer.trim_end().to_string())
     }
 }
 
