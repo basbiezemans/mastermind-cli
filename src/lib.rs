@@ -16,7 +16,7 @@ pub mod user_input {
     /// appended to a buffer, trimmed, and returned as a string.
     pub fn read_line(prompt: &str) -> Result<String, std::io::Error> {
         print!("{}", prompt);
-        stdout().flush().unwrap(); // write prompt to standard output
+        stdout().flush()?; // write prompt to standard output
         let mut input = String::new();
         stdin().read_line(&mut input)?;
         Ok(input.trim_end().to_string())
