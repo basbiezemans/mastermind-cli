@@ -19,7 +19,7 @@ pub mod user_input {
         io::stdout().flush()?; // write prompt to standard output
         let mut buffer = String::new();
         io::stdin().read_line(&mut buffer)?;
-        Ok(buffer.trim_end().to_string())
+        Ok(buffer.trim().to_string())
     }
 }
 
