@@ -1,6 +1,6 @@
 use clap::Parser;
 use mastermind_cli::{
-    code::random as make_secret, feedback, show, user_input::read_line,
+    code::random as secret, feedback, show, user_input::read_line,
 };
 use pluralizer::pluralize;
 
@@ -18,13 +18,23 @@ struct Args {
 fn main() {
     let args = Args::parse();
     let limit = args.turns;
-    let secret = make_secret();
 
-    println!("┌────────────────────────────────────┐");
-    println!("│ Mastermind, the code-breaking game │");
-    println!("└────────────────────────────────────┘");
-    println!("You have {limit} turns to guess the code. Good luck!");
+    loop {
+        println!("\n");
+        println!("┌────────────────────────────────────┐");
+        println!("│ Mastermind, the code-breaking game │");
+        println!("└────────────────────────────────────┘");
+        println!("\nYou have {limit} turns to break the code. Good luck!");
 
+        play_game(limit, secret());
+
+        if !play_again() {
+            break;
+        }
+    }
+}
+
+fn play_game(limit: u8, secret: String) {
     for turns_left in (0..limit).rev() {
         println!(
             "\nYou have {: >2} {} left.",
@@ -45,6 +55,18 @@ fn main() {
             println!("No such luck. The secret was {secret}\n");
         } else {
             println!("Hint: {}", show(feedback(guess, secret.clone())));
+        }
+    }
+}
+
+fn play_again() -> bool {
+    loop {
+        let question = "Do you want to play again? (y/n): ";
+        let answer = read_line(question).unwrap_or_default();
+        match answer.to_lowercase().as_str() {
+            "y" | "yes" => return true,
+            "n" | "no" => return false,
+            _ => println!("Please enter 'y' or 'n'."),
         }
     }
 }
