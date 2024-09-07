@@ -26,23 +26,29 @@ fn main() {
         println!("└────────────────────────────────────┘");
         println!("\nYou have {limit} turns to break the code. Good luck!");
 
-        play_game(limit, secret());
+        let exit = play_game(limit, secret());
 
-        if !play_again() {
+        if exit || !play_again() {
             break;
         }
     }
 }
 
-fn play_game(limit: u8, secret: String) {
+fn play_game(limit: u8, secret: String) -> bool {
     for turns_left in (0..limit).rev() {
         println!(
-            "\nYou have {: >2} {} left.",
+            "\nYou have {: >2} {} left. (type 'quit' to exit)",
             (1 + turns_left),
             pluralize("turn", (1 + turns_left).into(), false)
         );
 
-        let guess = read_line("Guess: ").unwrap_or_default();
+        let input = read_line("Guess: ").unwrap_or_default();
+        let guess = input.clone();
+
+        if input == "quit" || input == "exit" {
+            println!("\nThanks for playing! The secret was {secret}\n");
+            return true;
+        }
 
         if guess == secret {
             let turns_taken = limit - turns_left;
@@ -57,6 +63,7 @@ fn play_game(limit: u8, secret: String) {
             println!("Hint: {}", show(feedback(guess, secret.clone())));
         }
     }
+    false
 }
 
 fn play_again() -> bool {
