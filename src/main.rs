@@ -1,6 +1,7 @@
 use clap::Parser;
 use mastermind_cli::{
-    code::random as secret, feedback, show, user_input::read_line,
+    codemaker::{feedback, secret, show},
+    user_input::read_line,
 };
 use pluralizer::pluralize;
 
