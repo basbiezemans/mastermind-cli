@@ -2,7 +2,7 @@
 pub mod codemaker;
 
 /// Parse or generate a 4-digit number.
-pub mod code;
+mod code;
 
 /// Prompt the user and read from standard input.
 pub mod user_input {
