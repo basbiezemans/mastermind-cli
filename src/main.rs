@@ -16,6 +16,12 @@ struct Args {
     turns: u8,
 }
 
+enum GameState {
+    ExitGame,
+    GameOver,
+    GameWon(u8),
+}
+
 fn main() {
     let args = Args::parse();
     let limit = args.turns;
@@ -27,15 +33,33 @@ fn main() {
         println!("└────────────────────────────────────┘");
         println!("\nYou have {limit} turns to break the code. Good luck!");
 
-        let exit = play_game(limit, secret());
+        let secret = secret();
 
-        if exit || !play_again() {
-            break;
+        match play_game(limit, secret.clone()) {
+            GameState::GameOver => {
+                println!("No such luck. The secret was {secret}\n");
+                if !play_again() {
+                    break;
+                }
+            }
+            GameState::GameWon(turns_taken) => {
+                println!(
+                    "\nYou won in {}!\n",
+                    pluralize("guess", turns_taken.into(), true)
+                );
+                if !play_again() {
+                    break;
+                }
+            }
+            GameState::ExitGame => {
+                println!("\nThanks for playing! The secret was {secret}\n");
+                break;
+            }
         }
     }
 }
 
-fn play_game(limit: u8, secret: String) -> bool {
+fn play_game(limit: u8, secret: String) -> GameState {
     for turns_left in (0..limit).rev() {
         println!(
             "\nYou have {: >2} {} left. (type 'quit' to exit)",
@@ -47,24 +71,18 @@ fn play_game(limit: u8, secret: String) -> bool {
         let guess = input.clone();
 
         if input == "quit" || input == "exit" {
-            println!("\nThanks for playing! The secret was {secret}\n");
-            return true;
+            return GameState::ExitGame;
         }
 
         if guess == secret {
-            let turns_taken = limit - turns_left;
-            println!(
-                "\nYou won in {}!\n",
-                pluralize("guess", turns_taken.into(), true)
-            );
-            break;
+            return GameState::GameWon(limit - turns_left);
         } else if turns_left == 0 {
-            println!("No such luck. The secret was {secret}\n");
+            break;
         } else {
             println!("Hint: {}", show(feedback(guess, secret.clone())));
         }
     }
-    false
+    GameState::GameOver
 }
 
 fn play_again() -> bool {
